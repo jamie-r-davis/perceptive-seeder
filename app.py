@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime as dt
 from io import StringIO
 from tempfile import TemporaryDirectory
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
 
 import click
 
@@ -33,18 +33,26 @@ def get_timestamp():
 @click.command()
 @click.option("--pdfs", type=int, default=0)
 @click.option("--zipsize", type=int, default=0)
-def main(pdfs, zipsize):
+@click.option("--compressed", is_flag=True)
+def main(pdfs, zipsize, compressed):
+    try:
+        os.mkdir("output")
+    except:
+        pass
     if pdfs == 0:
         pdfs = random.randint(1, 10000)
     if zipsize == 0:
         zipsize = random.randint(1, 5000)
+    compression = ZIP_STORED
+    if compressed:
+        compression = ZIP_DEFLATED
     generated = 0
     while generated < pdfs:
         zdttm = get_timestamp()
         zfn = f"SLTIMG_{zdttm}_test_files.zip"
         zfp = os.path.join("output", zfn)
         logging.debug(f"Opening {zfn}")
-        with ZipFile(zfp, "w", compression=ZIP_DEFLATED) as zf:
+        with ZipFile(zfp, "w", compression=compression) as zf:
             idxs = []
             for i in range(zipsize):
                 src = random.choice(SRC_FILES)
