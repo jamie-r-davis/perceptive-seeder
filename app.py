@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime as dt
 from io import StringIO
 from tempfile import TemporaryDirectory
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 
 import click
 
@@ -44,7 +44,7 @@ def main(pdfs, zipsize):
         zfn = f"SLTIMG_{zdttm}_test_files.zip"
         zfp = os.path.join("output", zfn)
         logging.debug(f"Opening {zfn}")
-        with ZipFile(zfp, "w") as zf:
+        with ZipFile(zfp, "w", compression=ZIP_DEFLATED) as zf:
             idxs = []
             for i in range(zipsize):
                 src = random.choice(SRC_FILES)
